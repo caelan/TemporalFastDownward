@@ -1,0 +1,74 @@
+var0
+   0: Atom atconf(<v1>, <v11>)
+   1: Atom atconf(<v1>, <v13>)
+   2: Atom atconf(<v1>, <v20>)
+   3: Atom atconf(<v1>, <v27>)
+   4: Atom atconf(<v1>, <v29>)
+   5: Atom atconf(<v1>, <v2>)
+   6: Atom atconf(<v1>, <v31>)
+   7: <none of those>
+var1
+   0: Atom atconf(<v3>, <v11>)
+   1: Atom atconf(<v3>, <v13>)
+   2: Atom atconf(<v3>, <v20>)
+   3: Atom atconf(<v3>, <v27>)
+   4: Atom atconf(<v3>, <v29>)
+   5: Atom atconf(<v3>, <v2>)
+   6: Atom atconf(<v3>, <v31>)
+   7: <none of those>
+var2
+   0: Atom atgrasp(<v1>, <v4>, <v6>)
+   1: <none of those>
+var3
+   0: Atom atgrasp(<v1>, <v8>, <v6>)
+   1: <none of those>
+var4
+   0: Atom atgrasp(<v3>, <v4>, <v6>)
+   1: <none of those>
+var5
+   0: Atom atgrasp(<v3>, <v8>, <v6>)
+   1: <none of those>
+var6
+   0: Atom atpose(<v4>, <v12>)
+   1: <none of those>
+var7
+   0: Atom atpose(<v4>, <v15>)
+   1: <none of those>
+var8
+   0: Atom atpose(<v4>, <v5>)
+   1: <none of those>
+var9
+   0: Atom atpose(<v8>, <v14>)
+   1: <none of those>
+var10
+   0: Atom atpose(<v8>, <v16>)
+   1: <none of those>
+var11
+   0: Atom atpose(<v8>, <v9>)
+   1: <none of those>
+var12
+   0: Atom cooked(<v4>)
+   1: <none of those>
+var13
+   0: Atom cooked(<v8>)
+   1: <none of those>
+var14
+   0: Atom handempty(<v1>)
+   1: <none of those>
+var15
+   0: Atom handempty(<v3>)
+   1: <none of those>
+var16
+   0: Atom in(<v4>, <v0>)
+   1: <none of those>
+var17
+   0: Atom in(<v4>, <v7>)
+   1: <none of those>
+var18
+   0: Atom in(<v8>, <v0>)
+   1: <none of those>
+var19
+   0: Atom in(<v8>, <v7>)
+   1: <none of those>
+var20
+   -2: PNE derived!1()

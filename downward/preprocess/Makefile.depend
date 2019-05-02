@@ -1,0 +1,114 @@
+.obj/planner.o: planner.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h domain_transition_graph.h \
+ operator.h axiom.h
+.obj/helper_functions.o: helper_functions.cc helper_functions.h state.h \
+ variable.h successor_generator.h causal_graph.h operator.h axiom.h \
+ domain_transition_graph.h
+.obj/operator.o: operator.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h operator.h
+.obj/state.o: state.cc state.h helper_functions.h variable.h \
+ successor_generator.h causal_graph.h
+.obj/successor_generator.o: successor_generator.cc operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h
+.obj/scc.o: scc.cc scc.h
+.obj/causal_graph.o: causal_graph.cc causal_graph.h max_dag.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h axiom.h \
+ scc.h
+.obj/max_dag.o: max_dag.cc max_dag.h
+.obj/variable.o: variable.cc variable.h
+.obj/domain_transition_graph.o: domain_transition_graph.cc \
+ domain_transition_graph.h operator.h helper_functions.h state.h \
+ variable.h successor_generator.h causal_graph.h \
+ domain_transition_graph_symb.h domain_transition_graph_func.h \
+ domain_transition_graph_subterm.h axiom.h
+.obj/domain_transition_graph_symb.o: domain_transition_graph_symb.cc \
+ domain_transition_graph_symb.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/domain_transition_graph_func.o: domain_transition_graph_func.cc \
+ domain_transition_graph_func.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/domain_transition_graph_subterm.o: domain_transition_graph_subterm.cc \
+ domain_transition_graph_subterm.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/axiom.o: axiom.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h axiom.h
+.obj/planner.debug.o: planner.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h domain_transition_graph.h \
+ operator.h axiom.h
+.obj/helper_functions.debug.o: helper_functions.cc helper_functions.h state.h \
+ variable.h successor_generator.h causal_graph.h operator.h axiom.h \
+ domain_transition_graph.h
+.obj/operator.debug.o: operator.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h operator.h
+.obj/state.debug.o: state.cc state.h helper_functions.h variable.h \
+ successor_generator.h causal_graph.h
+.obj/successor_generator.debug.o: successor_generator.cc operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h
+.obj/scc.debug.o: scc.cc scc.h
+.obj/causal_graph.debug.o: causal_graph.cc causal_graph.h max_dag.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h axiom.h \
+ scc.h
+.obj/max_dag.debug.o: max_dag.cc max_dag.h
+.obj/variable.debug.o: variable.cc variable.h
+.obj/domain_transition_graph.debug.o: domain_transition_graph.cc \
+ domain_transition_graph.h operator.h helper_functions.h state.h \
+ variable.h successor_generator.h causal_graph.h \
+ domain_transition_graph_symb.h domain_transition_graph_func.h \
+ domain_transition_graph_subterm.h axiom.h
+.obj/domain_transition_graph_symb.debug.o: domain_transition_graph_symb.cc \
+ domain_transition_graph_symb.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/domain_transition_graph_func.debug.o: domain_transition_graph_func.cc \
+ domain_transition_graph_func.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/domain_transition_graph_subterm.debug.o: domain_transition_graph_subterm.cc \
+ domain_transition_graph_subterm.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/axiom.debug.o: axiom.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h axiom.h
+.obj/planner.profile.o: planner.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h domain_transition_graph.h \
+ operator.h axiom.h
+.obj/helper_functions.profile.o: helper_functions.cc helper_functions.h state.h \
+ variable.h successor_generator.h causal_graph.h operator.h axiom.h \
+ domain_transition_graph.h
+.obj/operator.profile.o: operator.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h operator.h
+.obj/state.profile.o: state.cc state.h helper_functions.h variable.h \
+ successor_generator.h causal_graph.h
+.obj/successor_generator.profile.o: successor_generator.cc operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h
+.obj/scc.profile.o: scc.cc scc.h
+.obj/causal_graph.profile.o: causal_graph.cc causal_graph.h max_dag.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h axiom.h \
+ scc.h
+.obj/max_dag.profile.o: max_dag.cc max_dag.h
+.obj/variable.profile.o: variable.cc variable.h
+.obj/domain_transition_graph.profile.o: domain_transition_graph.cc \
+ domain_transition_graph.h operator.h helper_functions.h state.h \
+ variable.h successor_generator.h causal_graph.h \
+ domain_transition_graph_symb.h domain_transition_graph_func.h \
+ domain_transition_graph_subterm.h axiom.h
+.obj/domain_transition_graph_symb.profile.o: domain_transition_graph_symb.cc \
+ domain_transition_graph_symb.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/domain_transition_graph_func.profile.o: domain_transition_graph_func.cc \
+ domain_transition_graph_func.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/domain_transition_graph_subterm.profile.o: domain_transition_graph_subterm.cc \
+ domain_transition_graph_subterm.h domain_transition_graph.h operator.h \
+ helper_functions.h state.h variable.h successor_generator.h \
+ causal_graph.h axiom.h scc.h
+.obj/axiom.profile.o: axiom.cc helper_functions.h state.h variable.h \
+ successor_generator.h causal_graph.h axiom.h

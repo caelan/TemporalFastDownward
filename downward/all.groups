@@ -1,0 +1,81 @@
+begin_groups
+22
+group
+1
+0 5 atconf 2 <v1> <v2> 
+group
+7
+0 0 atconf 2 <v1> <v11> 
+0 1 atconf 2 <v1> <v13> 
+0 5 atconf 2 <v1> <v2> 
+0 2 atconf 2 <v1> <v20> 
+0 3 atconf 2 <v1> <v27> 
+0 4 atconf 2 <v1> <v29> 
+0 6 atconf 2 <v1> <v31> 
+group
+1
+1 5 atconf 2 <v3> <v2> 
+group
+7
+1 0 atconf 2 <v3> <v11> 
+1 1 atconf 2 <v3> <v13> 
+1 5 atconf 2 <v3> <v2> 
+1 2 atconf 2 <v3> <v20> 
+1 3 atconf 2 <v3> <v27> 
+1 4 atconf 2 <v3> <v29> 
+1 6 atconf 2 <v3> <v31> 
+group
+1
+2 0 atgrasp 3 <v1> <v4> <v6> 
+group
+1
+6 0 atpose 2 <v4> <v12> 
+group
+1
+14 0 handempty 1 <v1> 
+group
+1
+3 0 atgrasp 3 <v1> <v8> <v6> 
+group
+1
+19 0 in 2 <v8> <v7> 
+group
+1
+12 0 cooked 1 <v4> 
+group
+1
+7 0 atpose 2 <v4> <v15> 
+group
+1
+4 0 atgrasp 3 <v3> <v4> <v6> 
+group
+1
+17 0 in 2 <v4> <v7> 
+group
+1
+10 0 atpose 2 <v8> <v16> 
+group
+1
+8 0 atpose 2 <v4> <v5> 
+group
+1
+11 0 atpose 2 <v8> <v9> 
+group
+1
+9 0 atpose 2 <v8> <v14> 
+group
+1
+5 0 atgrasp 3 <v3> <v8> <v6> 
+group
+1
+18 0 in 2 <v8> <v0> 
+group
+1
+13 0 cooked 1 <v8> 
+group
+1
+16 0 in 2 <v4> <v0> 
+group
+1
+15 0 handempty 1 <v3> 
+end_groups
