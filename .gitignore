@@ -1,2 +1,5 @@
 .obj
 *.pyc
+output
+output.sas
+*.groups
