@@ -10,6 +10,7 @@ import pddl
 import sas_tasks
 import simplify
 import itertools
+import copy
 
 # TODO: The translator may generate trivial derived variables which are always true,
 # for example if there ia a derived predicate in the input that only depends on
@@ -226,7 +227,7 @@ def translate_strips_conditions_aux(conditions, dictionary, ranges, comparison_a
                 new_conds = []
                 for cond in flat_conds:
                     for val in vals:
-                        new_cond = deepcopy(cond)
+                        new_cond = copy.deepcopy(cond)
                         new_cond[var] = val
                         new_conds.append(new_cond)
                 flat_conds = new_conds
