@@ -1,8 +1,5 @@
 #include "plannerParameters.h"
 #include <iostream>
-#if ROS_BUILD
-#include <ros/ros.h>
-#endif
 #include <stdio.h>
 
 PlannerParameters::PlannerParameters()
@@ -69,7 +66,6 @@ PlannerParameters::~PlannerParameters()
 bool PlannerParameters::readParameters(int argc, char** argv)
 {
     bool ret = true;
-    ret &= readROSParameters();
     ret &= readCmdLineParameters(argc, argv);
 
     if(!cyclic_cg_heuristic && !makespan_heuristic && !no_heuristic) {
@@ -186,73 +182,6 @@ void PlannerParameters::dump() const
     cout << "Monitoring verify timestamps: " << (monitoring_verify_timestamps ? "Enabled" : "Disabled") << endl;
 
     cout << endl;
-}
-
-bool PlannerParameters::readROSParameters()
-{
-    bool ret = true;
-
-#if ROS_BUILD
-    ros::NodeHandle nhPriv("~");
-    nhPriv.param("anytime_search", anytime_search, anytime_search);
-    nhPriv.param("timeout_if_plan_found", timeout_if_plan_found, timeout_if_plan_found);
-    nhPriv.param("timeout_while_no_plan_found", timeout_while_no_plan_found, timeout_while_no_plan_found); 
-
-    nhPriv.param("greedy", greedy, greedy);
-    nhPriv.param("lazy_evaluation", lazy_evaluation, lazy_evaluation);
-
-    nhPriv.param("cyclic_cg_heuristic", cyclic_cg_heuristic, cyclic_cg_heuristic);
-    nhPriv.param("cyclic_cg_heuristic_preferred_operators", 
-            cyclic_cg_preferred_operators, cyclic_cg_preferred_operators);
-    nhPriv.param("makespan_heuristic", makespan_heuristic, makespan_heuristic);
-    nhPriv.param("makespan_heuristic_preferred_operators", makespan_heuristic_preferred_operators, 
-            makespan_heuristic_preferred_operators);
-    nhPriv.param("no_heuristic", no_heuristic, no_heuristic);
-
-    string gMode;
-    if(nhPriv.getParam("g_values", gMode)) {
-        if(gMode == "makespan") {
-            g_values = GMakespan;
-        } else if(gMode == "cost") {
-            g_values = GCost;
-        } else if(gMode == "timestamp") {
-            g_values = GTimestamp;
-        } else if(gMode == "weighted") {
-            g_values = GWeighted;
-            if(!nhPriv.getParam("g_weight", g_weight)) {
-                ROS_FATAL("G mode weighted choosen, but g_weight not set.");
-                ret = false;
-            }
-        } else {
-            ROS_FATAL("Unknown value: %s for g_values. Valid values: [makespan, cost, timestamp, weighted]", gMode.c_str());
-            ret = false;
-        }
-    }
-
-    string qMode;
-    if(nhPriv.getParam("queue_management_mode", qMode)) {
-        if(qMode == "priority_based") {
-            queueManagementMode = BestFirstSearchEngine::PRIORITY_BASED;
-        } else if(qMode == "round_robin") {
-            queueManagementMode = BestFirstSearchEngine::ROUND_ROBIN;
-        } else {
-            ROS_FATAL("Unknown value: %s for queue management mode. Valid values: [priority_based, round_robin, hierarchical]", qMode.c_str());
-            ret = false;
-        }
-    }
-
-    nhPriv.param("use_known_by_logical_state_only",
-            use_known_by_logical_state_only, use_known_by_logical_state_only);
-
-    nhPriv.param("reschedule_plans", reschedule_plans, reschedule_plans);
-    nhPriv.param("plan_name", plan_name, plan_name);
-
-    // Don't get planMonitorFileName from param server as that is an input
-
-    nhPriv.param("monitoring_verify_timestamps", monitoring_verify_timestamps, monitoring_verify_timestamps);
-#endif
-
-    return ret;
 }
 
 void PlannerParameters::printUsage() const

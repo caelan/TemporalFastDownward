@@ -11,7 +11,6 @@ class PlannerParameters
       PlannerParameters();
       ~PlannerParameters();
  
-      /// Read parameters from ROS and cmd line (cmd line overrides ROS parameters).
       bool readParameters(int argc, char** argv);
 
       void dump() const;
@@ -81,8 +80,6 @@ class PlannerParameters
       bool monitoring_verify_timestamps;     ///< During monitoring only accept the monitored plan if the timestamps match the original one.
    
    protected:
-      /// Read parameters from param server (ros must be initialized).
-      bool readROSParameters();
       /// Read parameters from command line.
       bool readCmdLineParameters(int argc, char** argv);
 

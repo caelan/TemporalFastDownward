@@ -4,10 +4,6 @@
 #include "globals.h"
 #include "axioms.h"
 #include "plannerParameters.h"
-#include "ros_printouts.h"
-#if ROS_BUILD
-#include <ros/ros.h>
-#endif
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -75,20 +71,17 @@ bool MonitorEngine::validatePlan(vector<string>& plan)
             continue;
         // start
         if(plan[i].find(":") == string::npos) {
-            ROS_FATAL("%s - could not find ':' in step: %s.", __func__, plan[i].c_str());
             return false;
         }
         const char* startStr = plan[i].substr(0, plan[i].find(":")).c_str();
         char* check = NULL;
         double start = strtod(startStr, &check);
         if(check == startStr) {
-            ROS_FATAL("%s: Start parsing failed in step: %s.", __func__, plan[i].c_str());
             return false;
         }
 
         // op
         if(plan[i].find("(") == string::npos || plan[i].find(")") == string::npos) {
-            ROS_FATAL("%s - could not find '(' and ')' in step: %s.", __func__, plan[i].c_str());
             return false;
         }
         string name = plan[i].substr(plan[i].find("(") + 1, plan[i].find(")")
@@ -97,14 +90,12 @@ bool MonitorEngine::validatePlan(vector<string>& plan)
 
         // duration
         if(plan[i].find("[") == string::npos || plan[i].find("]") == string::npos) {
-            ROS_FATAL("%s - could not find '[' and ']' in step: %s.", __func__, plan[i].c_str());
             return false;
         }
         const char* durStr = plan[i].substr(plan[i].find("[") + 1, plan[i].length() - plan[i].find("[")).c_str();
         check = NULL;
         double duration = strtod(durStr, &check);
         if(check == durStr) {
-            ROS_FATAL("%s: Duration parsing failed in step: %s.", __func__, plan[i].c_str());
             return false;
         }
 
@@ -119,7 +110,6 @@ bool MonitorEngine::validatePlan(vector<string>& plan)
             }
         }
         if(!opFound) {
-            ROS_FATAL("%s: Could not find matching operator for plan step: \"%s\"", __func__, name.c_str());
             return false;
         }
 
@@ -128,11 +118,8 @@ bool MonitorEngine::validatePlan(vector<string>& plan)
     // sort the PlanSteps according to their start time (usually they are already).
     stable_sort(p.begin(), p.end(), PlanStepCompareStartTime());
 
-    ROS_DEBUG_STREAM("Validating Plan:");
     unsigned int count = 0;
     for(vector<PlanStep>::iterator it = p.begin(); it != p.end(); it++) {
-        ROS_DEBUG_STREAM("[" << count << "] \t" << setprecision(2) << fixed << it->start_time 
-                << "  \"" << it->op->get_name() << "\"  " << it->duration);
         count++;
     }
 
@@ -200,10 +187,8 @@ bool MonitorEngine::validatePlan(std::vector<PlanStep> & plan)
 
         currentTraces = nextTraces;
         if(currentTraces.empty()) {
-            ROS_DEBUG("Step [% 6d]: Could not apply operator: \"%s\" to any state.", i, plan[i].op->get_name().c_str());
             return false;
         }
-        ROS_DEBUG("Step [% 6d]: Applied operator: \"%s\"", i, plan[i].op->get_name().c_str());
     }
 
     // final step: Finalize all ops in queue by letting time pass to finish all ops
@@ -231,17 +216,14 @@ bool MonitorEngine::validatePlan(std::vector<PlanStep> & plan)
     }
 
     if(!ret)
-        ROS_DEBUG("Applied all operators but final plan doesn't fulfill goal.");
 
     if(best != NULL) {
         stringstream os;
         best->outputPlan(os);
-        ROS_INFO_STREAM("Monitored Plan:" << endl << os.str());
         if(!g_parameters.plan_name.empty()) {
             string monitorPlanName = g_parameters.plan_name + ".monitored";
             ofstream of(monitorPlanName.c_str());
             if(!of.good()) {
-                ROS_ERROR("Could not open monitoring output at \"%s\"", monitorPlanName.c_str());
             } else {
                 best->outputPlan(of);
                 of.close();
@@ -358,7 +340,6 @@ void FullPlanTrace::outputPlan(ostream & os) const
     //    bool first = true;
     for(deque<FullPlanStep>::const_iterator it = plan.begin(); it != plan.end(); it++) {
         if(it->op == NULL) {
-            //            ROS_ASSERT(first);      // op == NULL is OK for the first state (from seed) - we skip that.
             //            first = false;
             continue;
         }
@@ -372,7 +353,6 @@ void FullPlanTrace::outputPlan(ostream & os) const
 void FullPlanTrace::dumpLastState() const
 {
     if(plan.empty()) {
-        ROS_WARN("%s: plan is empty.", __PRETTY_FUNCTION__);
         return;
     }
     plan.back().state.dump(true);

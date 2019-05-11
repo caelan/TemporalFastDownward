@@ -2,7 +2,7 @@
  globals.h causal_graph.h state.h search_engine.h search_statistics.h \
  statistics.h cyclic_cg_heuristic.h heuristic.h domain_transition_graph.h \
  no_heuristic.h monitoring.h partial_order_lifter.h scheduler.h \
- plannerParameters.h ros_printouts.h
+ plannerParameters.h
 .obj/heuristic.o: heuristic.cc heuristic.h globals.h causal_graph.h operator.h \
  state.h plannerParameters.h best_first_search.h closed_list.h \
  search_engine.h search_statistics.h statistics.h
@@ -33,8 +33,7 @@
  state.h globals.h causal_graph.h operator.h scheduler.h
 .obj/monitoring.o: monitoring.cc monitoring.h search_engine.h globals.h \
  causal_graph.h state.h operator.h axioms.h plannerParameters.h \
- best_first_search.h closed_list.h search_statistics.h statistics.h \
- ros_printouts.h
+ best_first_search.h closed_list.h search_statistics.h statistics.h
 .obj/best_first_search.o: best_first_search.cc best_first_search.h \
  closed_list.h operator.h globals.h causal_graph.h state.h \
  search_engine.h search_statistics.h statistics.h heuristic.h \
@@ -53,7 +52,7 @@
  globals.h causal_graph.h state.h search_engine.h search_statistics.h \
  statistics.h cyclic_cg_heuristic.h heuristic.h domain_transition_graph.h \
  no_heuristic.h monitoring.h partial_order_lifter.h scheduler.h \
- plannerParameters.h ros_printouts.h
+ plannerParameters.h
 .obj/heuristic.debug.o: heuristic.cc heuristic.h globals.h causal_graph.h operator.h \
  state.h plannerParameters.h best_first_search.h closed_list.h \
  search_engine.h search_statistics.h statistics.h
@@ -84,8 +83,7 @@
  state.h globals.h causal_graph.h operator.h scheduler.h
 .obj/monitoring.debug.o: monitoring.cc monitoring.h search_engine.h globals.h \
  causal_graph.h state.h operator.h axioms.h plannerParameters.h \
- best_first_search.h closed_list.h search_statistics.h statistics.h \
- ros_printouts.h
+ best_first_search.h closed_list.h search_statistics.h statistics.h
 .obj/best_first_search.debug.o: best_first_search.cc best_first_search.h \
  closed_list.h operator.h globals.h causal_graph.h state.h \
  search_engine.h search_statistics.h statistics.h heuristic.h \
@@ -104,7 +102,7 @@
  globals.h causal_graph.h state.h search_engine.h search_statistics.h \
  statistics.h cyclic_cg_heuristic.h heuristic.h domain_transition_graph.h \
  no_heuristic.h monitoring.h partial_order_lifter.h scheduler.h \
- plannerParameters.h ros_printouts.h
+ plannerParameters.h
 .obj/heuristic.profile.o: heuristic.cc heuristic.h globals.h causal_graph.h operator.h \
  state.h plannerParameters.h best_first_search.h closed_list.h \
  search_engine.h search_statistics.h statistics.h
@@ -135,8 +133,7 @@
  state.h globals.h causal_graph.h operator.h scheduler.h
 .obj/monitoring.profile.o: monitoring.cc monitoring.h search_engine.h globals.h \
  causal_graph.h state.h operator.h axioms.h plannerParameters.h \
- best_first_search.h closed_list.h search_statistics.h statistics.h \
- ros_printouts.h
+ best_first_search.h closed_list.h search_statistics.h statistics.h
 .obj/best_first_search.profile.o: best_first_search.cc best_first_search.h \
  closed_list.h operator.h globals.h causal_graph.h state.h \
  search_engine.h search_statistics.h statistics.h heuristic.h \

@@ -8,7 +8,6 @@
 #include "partial_order_lifter.h"
 
 #include "plannerParameters.h"
-#include "ros_printouts.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -19,10 +18,6 @@
 
 #include <cstdio>
 #include <math.h>
-
-#if ROS_BUILD
-#include <ros/ros.h>
-#endif
 
 using namespace std;
 
@@ -35,11 +30,6 @@ double getCurrentTime();            ///< returns the system time in seconds
 
 int main(int argc, char **argv)
 {
-#if ROS_BUILD
-    ros::init(argc, argv, "tfd_modules", ros::init_options::NoSigintHandler);
-    ros::NodeHandle nh;
-#endif
-
     srand(1);
     ifstream file("../preprocess/output");
     if(strcmp(argv[argc - 1], "-eclipserun") == 0) {
@@ -94,7 +84,6 @@ int main(int argc, char **argv)
     // Monitoring mode
     if (!g_parameters.planMonitorFileName.empty()) {
         bool ret = MonitorEngine::validatePlan(g_parameters.planMonitorFileName);
-        ROS_INFO_STREAM("Monitoring: Plan is valid: " << ret);
         if(ret)
             exit(0);
         exit(1);
@@ -228,11 +217,7 @@ bool epsilonize_plan(const std::string & filename, bool keepOriginalPlan = true)
     }
 
     // create the syscall to write the epsilonized plan
-#if ROS_BUILD
-    std::string syscall = "rosrun tfd_modules epsilonize_plan.py";
-#else
     std::string syscall = "epsilonize_plan.py";
-#endif
     // read in the orig plan filename and output to filename
     syscall += " < " + orig_file + " > " + filename;  
 
