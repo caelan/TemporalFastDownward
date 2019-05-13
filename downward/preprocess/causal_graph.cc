@@ -352,7 +352,7 @@ void CausalGraph::calculate_important_vars() {
     if(ordering[i]->is_necessary() || g_do_not_prune_variables)
       new_ordering.push_back(ordering[i]);
     else {
-	cout << "variable " << ordering[i]->get_name() << " is not necessary!" << endl;
+	    //cout << "variable " << ordering[i]->get_name() << " is not necessary!" << endl;
     }
   ordering = new_ordering;
   for(int i = 0; i < ordering.size(); i++) {
