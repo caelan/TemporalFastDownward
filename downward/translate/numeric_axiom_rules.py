@@ -2,7 +2,7 @@ import pddl
 
 def handle_axioms(axioms):
     axiom_by_pne = axiom_by_PNE(axioms)
-    constant_axioms = identify_constants(axioms, axiom_by_pne)
+    constant_axioms = set(identify_constants(axioms, axiom_by_pne))
     axioms_by_layer, max_layer = compute_axiom_layers(axioms, constant_axioms, axiom_by_pne)
     axiom_map = identify_equivalent_axioms(axioms_by_layer, axiom_by_pne)
     return axioms_by_layer, max_layer, axiom_map, constant_axioms

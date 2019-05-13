@@ -874,8 +874,8 @@ def write_mutex_key(mutex_key):
 
 
 if __name__ == "__main__":
-    pr = cProfile.Profile()
-    pr.enable()
+    #pr = cProfile.Profile()
+    #pr.enable()
     import pddl
     print "Parsing..."
     import __builtin__
@@ -903,7 +903,7 @@ if __name__ == "__main__":
     out_file = open("output.sas","a")
     out_file.write("%d\n" % containsQuantifiedConditions)
     out_file.close()
-    pr.disable()
-    pstats.Stats(pr).sort_stats('tottime').print_stats(25) # cumtime | tottime
+    #pr.disable()
+    #pstats.Stats(pr).sort_stats('tottime').print_stats(25) # cumtime | tottime
 
     print "Done!"
