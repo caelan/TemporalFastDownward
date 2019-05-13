@@ -353,6 +353,16 @@ bool BestFirstSearchEngine::is_dead_end()
 
 bool BestFirstSearchEngine::check_goal()
 {
+    if (current_state.satisfies(g_goal)) {
+        Plan plan;
+        PlanTrace path;
+        closed_list.trace_path(current_state, plan, path);
+        set_plan(plan);
+        set_path(path);
+        return true;
+    }
+    return false;
+    /*
     // Any heuristic reports 0 iff this is a goal state, so we can
     // pick an arbitrary one. Heuristics are assumed to not miss a goal
     // state and especially not to report a goal as dead end.
@@ -386,6 +396,7 @@ bool BestFirstSearchEngine::check_goal()
     } else {
         return false;
     }
+    */
 }
 
 void BestFirstSearchEngine::dump_plan_prefix_for_current_state() const
