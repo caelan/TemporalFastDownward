@@ -1,6 +1,6 @@
 # TemporalFastDownward
 
-A slightly modified of Temporal Fast Downward.
+A slightly modified version of Temporal Fast Downward.
 
 ## Information
 
