@@ -174,8 +174,7 @@ def compute_groups(task, atoms, reachable_action_params,
     if not only_objectfluents:
         print("Finding invariants...")
         groups = invariant_finder.get_groups(task, safe, reachable_action_params)
-        groups = sorted(groups, cmp=lambda x,y: cmp(str([str(a) for a in x]), 
-                                                    str([str(a) for a in y])))
+        groups = sorted(groups, key=lambda x: str([str(a) for a in x]))
         print("Instantiating groups...")
         groups = instantiate_groups(groups, task, atoms)
     

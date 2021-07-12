@@ -96,7 +96,7 @@ def compute_axiom_layers(axioms, constant_axioms, axiom_by_pne):
 def identify_equivalent_axioms(axioms_by_layer, axiom_by_pne):
     axiom_map = {} 
     for layer, axioms in axioms_by_layer.items():
-        axioms.sort(lambda x,y: cmp(str(x), str(y)))
+        axioms.sort(key=lambda x: str(x))
         key_to_unique = {}
         for ax in axioms:
             mapped_args = []

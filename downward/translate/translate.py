@@ -36,8 +36,8 @@ def strips_to_sas_dictionary(groups, num_axioms, num_axiom_map, num_fluents):
     dictionary = {}
 
     # sort groups to get a deterministic output
-    list(map(lambda g: g.sort(lambda x, y: cmp(str(x),str(y))),groups))
-    groups.sort(lambda x, y: cmp((-len(x),str(x[0])),(-len(y),str(y[0]))))
+    list(map(lambda g: g.sort(key=lambda x: str(x)),groups))
+    groups.sort(key=lambda x: (-len(x),str(x[0])))
 
     for var_no, group in enumerate(groups):
         for val_no, atom in enumerate(group):
@@ -61,7 +61,7 @@ def strips_to_sas_dictionary(groups, num_axioms, num_axiom_map, num_fluents):
 
     var_no = len(groups) + num_ax_count
     fluent_list = list(num_fluents)
-    fluent_list.sort(lambda x,y: cmp(str(x), str(y)))
+    fluent_list.sort(key=lambda x: str(x))
     for fluent in fluent_list: # are partially contained in num_axiom
         if fluent not in dictionary:
             dictionary.setdefault(fluent,[]).append((var_no, -2))
@@ -216,13 +216,13 @@ def translate_strips_conditions_aux(conditions, dictionary, ranges, comparison_a
                     # We can select any from new_condition and currently prefer the
                     # smalles one.
                     candidates = sorted(list(new_condition.items()),
-                                        lambda x,y: cmp(len(x[1]),len(y[1])))
+                                        key=lambda x: len(x[1]))
                     var, vals = candidates[0]
                     condition[var] = vals
  
     def multiply_out(condition): # destroys the input
         sorted_conds = sorted(list(condition.items()),
-                              lambda x,y: cmp(len(x[1]),len(y[1])))
+                              key=lambda x: len(x[1]))
         flat_conds = [{}]
         for var, vals in sorted_conds:
             if len(vals) == 1:
@@ -635,7 +635,7 @@ def translate_numeric_axiom(axiom, dictionary):
 
 def translate_strips_operators(actions, strips_to_sas, ranges, comp_axioms):
     result = []
-    actions.sort(lambda x,y: cmp(x.name,y.name))
+    actions.sort(key=lambda x: x.name)
     for action in actions:
         sas_op = translate_strips_operator(action, strips_to_sas, ranges, comp_axioms)
         if sas_op:
@@ -645,7 +645,7 @@ def translate_strips_operators(actions, strips_to_sas, ranges, comp_axioms):
 def translate_temporal_strips_operators(actions, strips_to_sas, ranges, comp_axioms,
         true_atoms, false_atoms):
     result = []
-    actions.sort(lambda x,y: cmp(x.name,y.name))
+    actions.sort(key=lambda x: x.name)
     for action in actions:
         sas_ops = translate_temporal_strips_operator(action, strips_to_sas, 
                                                      ranges, comp_axioms, 
@@ -656,7 +656,7 @@ def translate_temporal_strips_operators(actions, strips_to_sas, ranges, comp_axi
 
 def translate_strips_axioms(axioms, strips_to_sas, ranges, comp_axioms):
     result = []
-    axioms.sort(lambda x,y: cmp(x.name,y.name))
+    axioms.sort(key=lambda x: x.name)
     for axiom in axioms:
         sas_axioms = translate_strips_axiom(axiom, strips_to_sas, ranges, comp_axioms)
         if sas_axioms:
@@ -712,7 +712,7 @@ def translate_task(strips_to_sas, ranges, init, goals, actions,
     ## you can change this)
     num_axiom_layer = 0
     for layer in num_axioms_by_layer:
-        num_axioms_by_layer[layer].sort(lambda x,y: cmp(x.name,y.name))
+        num_axioms_by_layer[layer].sort(key=lambda x: x.name)
         for axiom in num_axioms_by_layer[layer]:
             if axiom.effect not in num_axiom_map:
                 [(var,val)] = strips_to_sas[axiom.effect]
@@ -775,7 +775,7 @@ def pddl_to_sas(task):
         return unsolvable_sas_task("No relaxed solution")
 
     num_axioms = list(num_axioms)
-    num_axioms.sort(lambda x,y: cmp(x.name,y.name))
+    num_axioms.sort(key=lambda x: x.name)
 
     # HACK! Goals should be treated differently (see TODO file).
     # Update: This is now done during normalization. The assertions
