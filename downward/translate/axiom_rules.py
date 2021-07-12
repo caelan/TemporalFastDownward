@@ -1,14 +1,14 @@
-import pddl
-#import sas_tasks
-
 from collections import defaultdict
+
+import pddl
+
 
 def handle_axioms(operators, durative_operators, axioms, goals):
     print("Processing axioms...")
 
     axioms_by_atom = get_axioms_by_atom(axioms)
 
-    axiom_literals = compute_necessary_axiom_literals(axioms_by_atom, operators, 
+    axiom_literals = compute_necessary_axiom_literals(axioms_by_atom, operators,
                                                       durative_operators, goals)
     axiom_init = get_axiom_init(axioms_by_atom, axiom_literals)
     axioms = simplify_axioms(axioms_by_atom, axiom_literals)
@@ -22,12 +22,12 @@ def handle_axioms(operators, durative_operators, axioms, goals):
     # we remove the constant heads from those
     axiom_literals = [a for a in axiom_literals
                       if a.positive() not in true_atoms and
-                         a.positive() not in false_atoms]
+                      a.positive() not in false_atoms]
     # The same goes for init. The true_atoms and false_atoms should be handled
     # in the translation
     axiom_init = [a for a in axiom_init
                   if a.positive() not in true_atoms and
-                     a.positive() not in false_atoms]
+                  a.positive() not in false_atoms]
 
     axioms = compute_negative_axioms(axioms_by_atom, axiom_literals)
     # NOTE: compute_negative_axioms more or less invalidates axioms_by_atom.
@@ -36,11 +36,13 @@ def handle_axioms(operators, durative_operators, axioms, goals):
     print("Found", len(true_atoms), "axioms that are always true and", len(false_atoms), "that are always false")
     return axioms, list(axiom_init), axiom_layers, true_atoms, false_atoms
 
+
 def get_axioms_by_atom(axioms):
     axioms_by_atom = {}
     for axiom in axioms:
         axioms_by_atom.setdefault(axiom.effect, []).append(axiom)
     return axioms_by_atom
+
 
 def compute_axiom_layers(axioms, axiom_init):
     NO_AXIOM = -1
@@ -64,6 +66,7 @@ def compute_axiom_layers(axioms, axiom_init):
                     depends_on[effect_atom].add((condition_atom, +0))
 
     layers = dict([(atom, UNKNOWN_LAYER) for atom in depends_on])
+
     def find_level(atom, marker):
         layer = layers.get(atom, NO_AXIOM)
         if layer == NO_AXIOM:
@@ -82,22 +85,24 @@ def compute_axiom_layers(axioms, axiom_init):
                 layer = max(layer, find_level(condition_atom, marker - bonus) + bonus)
             layers[atom] = layer
         return layer
+
     for atom in depends_on:
         find_level(atom, FIRST_MARKER)
 
-    #for atom, layer in layers.iteritems():
+    # for atom, layer in layers.iteritems():
     #  print "Layer %d: %s" % (layer, atom)
     return layers
 
-def compute_necessary_axiom_literals(axioms_by_atom, operators, 
+
+def compute_necessary_axiom_literals(axioms_by_atom, operators,
                                      durative_operators, goal):
     necessary_literals = set()
     queue = []
 
     def register_literals(literals, negated):
         for literal in literals:
-            if isinstance(literal,pddl.Literal):
-                if literal.positive() in axioms_by_atom:   # This is an axiom literal
+            if isinstance(literal, pddl.Literal):
+                if literal.positive() in axioms_by_atom:  # This is an axiom literal
                     if negated:
                         literal = literal.negate()
                     if literal not in necessary_literals:
@@ -129,15 +134,17 @@ def compute_necessary_axiom_literals(axioms_by_atom, operators,
             register_literals(axiom.condition, literal.negated)
     return necessary_literals
 
+
 def get_axiom_init(axioms_by_atom, necessary_literals):
     result = set()
     for atom in axioms_by_atom:
-        assert(not (atom in necessary_literals and atom.negate() in necessary_literals))
+        assert (not (atom in necessary_literals and atom.negate() in necessary_literals))
         if atom not in necessary_literals and atom.negate() in necessary_literals:
             # Initial value for axiom: False (which is omitted due to closed world
             # assumption) unless it is only needed negatively.
             result.add(atom)
     return result
+
 
 def simplify_axioms(axioms_by_atom, necessary_literals):
     necessary_atoms = set([literal.positive() for literal in necessary_literals])
@@ -148,6 +155,7 @@ def simplify_axioms(axioms_by_atom, necessary_literals):
         new_axioms += axioms
     return new_axioms
 
+
 def remove_duplicates(alist):
     next_elem = 1
     for i in range(1, len(alist)):
@@ -155,6 +163,7 @@ def remove_duplicates(alist):
             alist[next_elem] = alist[i]
             next_elem += 1
     alist[next_elem:] = []
+
 
 def simplify(axioms):
     """Remove duplicate axioms, duplicates within axioms, and dominated axioms."""
@@ -173,8 +182,8 @@ def simplify(axioms):
     axioms_to_skip = set()
     for axiom in axioms:
         if id(axiom) in axioms_to_skip:
-            continue   # Required to keep one of multiple identical axioms.
-        if not axiom.condition: # empty condition: dominates everything
+            continue  # Required to keep one of multiple identical axioms.
+        if not axiom.condition:  # empty condition: dominates everything
             return [axiom]
         literals = iter(axiom.condition)
         dominated_axioms = axioms_by_literal[next(literals)]
@@ -197,10 +206,10 @@ def compute_constant_axioms(axioms):
     axioms_by_condition = defaultdict(set)
     axioms_by_negated_condition = defaultdict(set)
 
-    queue = [] # true literals that have not been processed, yet
-    condition_counter = dict() 
+    queue = []  # true literals that have not been processed, yet
+    condition_counter = dict()
     # number of unsatisfied conditions for each axiom
-    axiom_counter = defaultdict(int) # number of axioms for each effect
+    axiom_counter = defaultdict(int)  # number of axioms for each effect
 
     # initialize counters and queue
     for axiom in new_axioms:
@@ -238,7 +247,7 @@ def compute_constant_axioms(axioms):
     # filter all axioms from new_atoms that have a constantly true
     # effect and simplify all other axiom conditions
     for axiom in list(new_axioms):
-        assert not axiom.effect in false_atoms # should already be removed
+        assert not axiom.effect in false_atoms  # should already be removed
         if axiom.effect in true_atoms:
             new_axioms.remove(axiom)
         else:
@@ -255,13 +264,14 @@ def compute_negative_axioms(axioms_by_atom, necessary_literals):
             new_axioms += axioms_by_atom[literal]
     return new_axioms
 
+
 def negate(axioms):
     assert axioms
     result = [pddl.PropositionalAxiom(axioms[0].name, [], axioms[0].effect.negate())]
     for axiom in axioms:
         condition = axiom.condition
         assert len(condition) > 0, "Negated axiom impossible; cannot deal with that"
-        if len(condition) == 1: # Handle easy special case quickly.
+        if len(condition) == 1:  # Handle easy special case quickly.
             new_literal = condition[0].negate()
             for result_axiom in result:
                 result_axiom.condition.append(new_literal)

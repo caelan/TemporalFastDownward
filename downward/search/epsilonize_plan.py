@@ -3,10 +3,9 @@
 
 from __future__ import print_function
 
-from decimal import Decimal
 import itertools
 import re
-#import sys
+from decimal import Decimal
 
 
 class TimedAction(object):
@@ -33,6 +32,7 @@ class TimedAction(object):
     def parse(cls, line, default_timestamp):
         def bad():
             raise ValueError("cannot parse line: %r" % line)
+
         # regex = re.compile(
         #   r"\s*(.*?)\s*:\s*\(\s*(.*?)\s*\)\s*(?:\[\s*(.*?)\s*\])?$")
         ## Changed regex to work around TLP-GP issue.
@@ -77,7 +77,7 @@ class Plan(object):
                 if actions:
                     default_timestamp = actions[-1].timestamp
                 else:
-                    default_timestamp=None
+                    default_timestamp = None
                 action = TimedAction.parse(line, default_timestamp)
                 actions.append(action)
         return cls(actions)
@@ -173,6 +173,7 @@ def epsilonize(infile, outfile):
 
 if __name__ == "__main__":
     import sys
+
     args = sys.argv[1:]
     if len(args) >= 3:
         raise SystemExit("usage: %s [infile [outfile]]" % sys.argv[0])

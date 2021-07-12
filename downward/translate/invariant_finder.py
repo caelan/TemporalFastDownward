@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: latin-1 -*-
 
-#from __future__ import with_statement
-from collections import deque, defaultdict
 import itertools
 import time
+from collections import deque, defaultdict
 
 import invariants
-import pddl
 import timers
+
 
 class BalanceChecker(object):
     def __init__(self, task, reachable_action_params, safe=True):
@@ -17,24 +16,24 @@ class BalanceChecker(object):
         for action in task.durative_actions:
             if safe:
                 action = self.add_inequality_preconds(action, reachable_action_params)
-                too_heavy_effects = [[],[]]
+                too_heavy_effects = [[], []]
                 create_heavy_act = False
             for time in range(2):
                 for eff in action.effects[time]:
                     if isinstance(eff.peffect, pddl.Atom):
-                            predicate = eff.peffect.predicate
-                            self.predicates_to_add_actions[predicate].add(action)
+                        predicate = eff.peffect.predicate
+                        self.predicates_to_add_actions[predicate].add(action)
                     if safe:
                         too_heavy_effects[time].append(eff)
-                        if eff.parameters: # universal effect
+                        if eff.parameters:  # universal effect
                             create_heavy_act = True
                             too_heavy_effects[time].append(eff.copy())
             if safe:
                 if create_heavy_act:
-                    heavy_act = pddl.DurativeAction(action.name, 
+                    heavy_act = pddl.DurativeAction(action.name,
                                                     action.parameters,
-                                                    action.duration, 
-                                                    action.condition, 
+                                                    action.duration,
+                                                    action.condition,
                                                     too_heavy_effects)
                     # heavy_act: duplicated universal effects and assigned unique
                     # names to all quantified variables (implicitly in constructor)
@@ -64,10 +63,10 @@ class BalanceChecker(object):
                 new_cond_parts.append(new_cond)
         if new_cond_parts:
             new_cond = list(action.condition)
-            for time in (0,2): # add inequalities to start and end condition
+            for time in (0, 2):  # add inequalities to start and end condition
                 cond_parts = list(action.condition[time].parts)
                 if (isinstance(action.condition[time], pddl.Literal)
-                    or isinstance(action.condition[time], pddl.FunctionComparison)):
+                        or isinstance(action.condition[time], pddl.FunctionComparison)):
                     cond_parts = [action.condition[time]]
                 cond_parts.extend(new_cond_parts)
                 cond = pddl.Conjunction(cond_parts)
@@ -78,6 +77,7 @@ class BalanceChecker(object):
         else:
             return action
 
+
 def get_fluents(task):
     fluent_names = set()
     for action in task.durative_actions:
@@ -86,6 +86,7 @@ def get_fluents(task):
                 if isinstance(eff.peffect, pddl.Literal):
                     fluent_names.add(eff.peffect.predicate)
     return [pred for pred in task.predicates if pred.name in fluent_names]
+
 
 def get_initial_invariants(task, safe):
     for predicate in get_fluents(task):
@@ -98,9 +99,11 @@ def get_initial_invariants(task, safe):
             else:
                 yield invariants.UnsafeInvariant((part,))
 
+
 # Input file might be grounded, beware of too many invariant candidates
 MAX_CANDIDATES = 100000
 MAX_TIME = 300
+
 
 def find_invariants(task, safe, reachable_action_params):
     candidates = deque(get_initial_invariants(task, safe))
@@ -123,6 +126,7 @@ def find_invariants(task, safe, reachable_action_params):
         if candidate.check_balance(balance_checker, enqueue_func):
             yield candidate
 
+
 def useful_groups(invariants, initial_facts):
     predicate_to_invariants = defaultdict(list)
     for invariant in invariants:
@@ -132,7 +136,7 @@ def useful_groups(invariants, initial_facts):
     nonempty_groups = set()
     overcrowded_groups = set()
     for atom in initial_facts:
-        if not isinstance(atom,pddl.FunctionAssignment):
+        if not isinstance(atom, pddl.FunctionAssignment):
             for invariant in predicate_to_invariants.get(atom.predicate, ()):
                 group_key = (invariant, tuple(invariant.get_parameters(atom)))
                 if group_key not in nonempty_groups:
@@ -143,6 +147,7 @@ def useful_groups(invariants, initial_facts):
     for (invariant, parameters) in useful_groups:
         yield [part.instantiate(parameters) for part in invariant.parts]
 
+
 def get_groups(task, safe=True, reachable_action_params=None):
     with timers.timing("Finding invariants"):
         invariants = list(find_invariants(task, safe, reachable_action_params))
@@ -151,8 +156,10 @@ def get_groups(task, safe=True, reachable_action_params=None):
         result = list(useful_groups(invariants, task.init))
     return result
 
+
 if __name__ == "__main__":
     import pddl
+
     print("Parsing...")
     task = pddl.open()
     print("Finding invariants...")

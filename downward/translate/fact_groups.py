@@ -5,6 +5,7 @@ from __future__ import print_function
 import invariant_finder
 import pddl
 
+
 def expand_group(group, task, reachable_facts):
     result = []
     for fact in group:
@@ -25,8 +26,10 @@ def expand_group(group, task, reachable_facts):
                     result.append(atom)
     return result
 
+
 def instantiate_groups(groups, task, reachable_facts):
     return [expand_group(group, task, reachable_facts) for group in groups]
+
 
 class GroupCoverQueue:
     def __init__(self, groups, partial_encoding, unused_groups=[]):
@@ -36,7 +39,7 @@ class GroupCoverQueue:
             self.groups_by_size = [[] for i in range(self.max_size + 1)]
             self.groups_by_fact = {}
             for group in groups:
-                group = set(group) # Copy group, as it will be modified.
+                group = set(group)  # Copy group, as it will be modified.
                 self.groups_by_size[len(group)].append(group)
                 for fact in group:
                     self.groups_by_fact.setdefault(fact, []).append(group)
@@ -46,16 +49,19 @@ class GroupCoverQueue:
             self._update_top()
         else:
             self.max_size = 0
+
     def __bool__(self):
         return self.max_size > 1
+
     def pop(self):
-        result = list(self.top) # Copy; this group will shrink further.
+        result = list(self.top)  # Copy; this group will shrink further.
         if self.partial_encoding:
             for fact in result:
                 for group in self.groups_by_fact[fact]:
                     group.remove(fact)
         self._update_top()
         return result
+
     def _update_top(self):
         while self.max_size > 1:
             max_list = self.groups_by_size[self.max_size]
@@ -66,6 +72,7 @@ class GroupCoverQueue:
                     return
                 self.groups_by_size[len(candidate)].append(candidate)
             self.max_size -= 1
+
 
 def choose_groups(groups, reachable_facts, partial_encoding=True):
     queue = GroupCoverQueue(groups, partial_encoding=partial_encoding)
@@ -79,11 +86,12 @@ def choose_groups(groups, reachable_facts, partial_encoding=True):
     result += [[fact] for fact in uncovered_facts]
     return result
 
-def choose_groups_with_object_fluents_first(synthesis_groups, object_fluent_groups, 
-    reachable_facts, partial_encoding=True):
+
+def choose_groups_with_object_fluents_first(synthesis_groups, object_fluent_groups,
+                                            reachable_facts, partial_encoding=True):
     uncovered_facts = reachable_facts.copy()
     result = []
-   
+
     # use grous from object fluents first
     shrink_groups = [set(group) for group in synthesis_groups]
     queue = GroupCoverQueue(object_fluent_groups, partial_encoding=partial_encoding,
@@ -94,7 +102,7 @@ def choose_groups_with_object_fluents_first(synthesis_groups, object_fluent_grou
         result.append(group)
     print(len(uncovered_facts), \
           "uncovered facts (before using the results from the invariant synthesis)")
-    
+
     # try to cover uncovered facts by using the groups from the 
     # invariant synthesis
     queue = GroupCoverQueue(shrink_groups, partial_encoding=partial_encoding)
@@ -107,6 +115,7 @@ def choose_groups_with_object_fluents_first(synthesis_groups, object_fluent_grou
     result += [[fact] for fact in uncovered_facts]
     return result
 
+
 def build_translation_key(groups):
     group_keys = []
     for group in groups:
@@ -115,11 +124,12 @@ def build_translation_key(groups):
         group_keys.append(group_key)
     return group_keys
 
+
 def collect_all_mutex_groups(groups, atoms):
     # NOTE: This should be functionally identical to choose_groups
     # when partial_encoding is set to False. Maybe a future
     # refactoring could take that into account.
-    all_groups = []      
+    all_groups = []
     uncovered_facts = atoms.copy()
     for group in groups:
         uncovered_facts.difference_update(group)
@@ -127,7 +137,8 @@ def collect_all_mutex_groups(groups, atoms):
     all_groups += [[fact] for fact in uncovered_facts]
     return all_groups
 
-def create_groups_from_object_fluents(atoms): 
+
+def create_groups_from_object_fluents(atoms):
     # Build groups that correspond to original object fluents:
     # Find atoms marked with '!val' and build a corresponding
     # group by finding all atoms that differ only in the last
@@ -135,7 +146,7 @@ def create_groups_from_object_fluents(atoms):
     groupdict = {}
     for a in atoms:
         if a.predicate.find("!val") != -1:
-            groupdict.setdefault(a.predicate+"_".join(map(str, a.args[:-1])), []).append(a)
+            groupdict.setdefault(a.predicate + "_".join(map(str, a.args[:-1])), []).append(a)
 
     # Construct the groups
     groups = []
@@ -146,11 +157,12 @@ def create_groups_from_object_fluents(atoms):
         groups.append(tgroup)
     return groups
 
+
 def compute_groups(task, atoms, reachable_action_params,
-    return_mutex_groups=True, partial_encoding=True, safe=True):
+                   return_mutex_groups=True, partial_encoding=True, safe=True):
     ## NOTE: exactly one of the following options should be true
     # TODO: there should be a configure section for this kind of stuff
-    
+
     # don't use the information from the object fluents at all
     no_objectfluents = False
     # use only information from objectfluents (all other variables will be
@@ -170,14 +182,14 @@ def compute_groups(task, atoms, reachable_action_params,
 
     if not no_objectfluents:
         objectfluent_groups = create_groups_from_object_fluents(atoms)
-   
+
     if not only_objectfluents:
         print("Finding invariants...")
         groups = invariant_finder.get_groups(task, safe, reachable_action_params)
         groups = sorted(groups, key=lambda x: str([str(a) for a in x]))
         print("Instantiating groups...")
         groups = instantiate_groups(groups, task, atoms)
-    
+
         if return_mutex_groups:
             mutex_groups = collect_all_mutex_groups(groups, atoms) + \
                            objectfluent_groups
@@ -185,12 +197,12 @@ def compute_groups(task, atoms, reachable_action_params,
     print("Choosing groups...")
     if use_objectfluents_first:
         groups = choose_groups_with_object_fluents_first(groups, objectfluent_groups,
-                 atoms, partial_encoding=partial_encoding)
+                                                         atoms, partial_encoding=partial_encoding)
     else:
         if only_objectfluents:
             groups = objectfluent_groups
         elif choose_groups_by_size:
-            groups = objectfluent_groups + groups # slightly prefer objectfluent groups
+            groups = objectfluent_groups + groups  # slightly prefer objectfluent groups
         groups = choose_groups(groups, atoms, partial_encoding=partial_encoding)
 
     print("Building translation key...")
