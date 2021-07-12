@@ -23,7 +23,7 @@ def invert_list(alist):
 
 
 def instantiate_factored_mapping(pairs):
-    part_mappings = [[zip(preimg, perm_img) for perm_img in tools.permutations(img)]
+    part_mappings = [[list(zip(preimg, perm_img)) for perm_img in tools.permutations(img)]
                      for (preimg, img) in pairs]
     return tools.cartesian_product(part_mappings)
 
@@ -37,9 +37,9 @@ def find_unique_variables(action, invariant):
         params.update([p.name for p in eff.parameters])
     inv_vars = []
     counter = itertools.count()
-    for _ in xrange(invariant.arity()):
+    for _ in range(invariant.arity()):
         while True:
-            new_name = "?v%i" % counter.next()
+            new_name = "?v%i" % next(counter)
             if new_name not in params:
                 inv_vars.append(pddl.Variable(new_name))
                 break
@@ -77,11 +77,11 @@ def ensure_conjunction_sat(system, *parts):
             else:
                 pos[literal.predicate].add(literal)
 
-    for pred, posatoms in pos.iteritems():
+    for pred, posatoms in pos.items():
         if pred in neg:
             for posatom in posatoms:
                 for negatom in neg[pred]:
-                    parts = zip(negatom.args, posatom.args)
+                    parts = list(zip(negatom.args, posatom.args))
                     if parts:
                         negative_clause = constraints.NegativeClause(parts)
                         system.add_negative_clause(negative_clause)
@@ -100,7 +100,7 @@ def ensure_inequality(system, literal1, literal2):
        the other is not)"""
     if (literal1.predicate == literal2.predicate and
         literal1.parts):
-        parts = zip(literal1.parts, literal2.parts)
+        parts = list(zip(literal1.parts, literal2.parts))
         system.add_negative_clause(constraints.NegativeClause(parts))
 
 
@@ -153,7 +153,7 @@ class InvariantPart:
         other_arg_to_pos = invert_list(other_literal.args)
         factored_mapping = []
 
-        for key, other_positions in other_arg_to_pos.iteritems():
+        for key, other_positions in other_arg_to_pos.items():
             own_positions = arg_to_ordered_pos.get(key, [])
             len_diff = len(own_positions) - len(other_positions)
             if len_diff >= 1 or len_diff <= -2 or len_diff == -1 and not allowed_omissions:
@@ -261,7 +261,7 @@ class SafeInvariant(Invariant):
 
     def operator_too_heavy(self, h_action):
         inv_vars = find_unique_variables(h_action, self)
-        for time in xrange(2):
+        for time in range(2):
             cond_time = 2 * time
             add_effects = [eff for eff in h_action.effects[time] 
                            if isinstance(eff.peffect, pddl.Literal) and 
@@ -291,7 +291,7 @@ class SafeInvariant(Invariant):
         relevant_effs = [[],[]]
         add_effects = [[],[]]
         del_effects = [[],[]]
-        for time in xrange(2):
+        for time in range(2):
             relevant_effs[time] = [eff for eff in action.effects[time] 
                                    if isinstance(eff.peffect, pddl.Literal) and
                                    self.predicate_to_part.get(eff.peffect.predicate)]
@@ -299,7 +299,7 @@ class SafeInvariant(Invariant):
                                  if not eff.peffect.negated]
             del_effects[time] = [eff for eff in relevant_effs[time]
                                  if eff.peffect.negated]
-        for time in xrange(2):
+        for time in range(2):
             poss_temporary_cand = ((time == 1) and not len(add_effects[0]))
             for eff in add_effects[time]:
                 unbal, new_candidates = self.add_effect_unbalanced(action,
@@ -451,7 +451,7 @@ class SafeInvariant(Invariant):
 
     def lhs_satisfiable(self, renaming, lhs_by_pred):
         system = renaming.copy()
-        ensure_conjunction_sat(system, *itertools.chain(lhs_by_pred.values()))
+        ensure_conjunction_sat(system, *itertools.chain(list(lhs_by_pred.values())))
         return system.is_solvable()
 
     def imply_del_effect(self, del_effect, lhs_by_pred, time):
@@ -468,7 +468,7 @@ class SafeInvariant(Invariant):
                 if match.negated != literal.negated:
                     continue
                 else:
-                    a = constraints.Assignment(zip(literal.args, match.args))
+                    a = constraints.Assignment(list(zip(literal.args, match.args)))
                     poss_assignments.append(a)
             if not poss_assignments:
                 return None

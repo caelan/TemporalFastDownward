@@ -1,8 +1,6 @@
 import itertools
 
-import pddl_types
-import f_expression
-import tasks
+from . import pddl_types
 
 def parse_condition(alist):
     condition = parse_condition_aux(alist, False)
@@ -13,6 +11,7 @@ def parse_condition_aux(alist, negated):
     tag = alist[0]
 
     if is_function_comparison(alist):
+        from . import f_expression
         args = [f_expression.parse_expression(arg) for arg in alist[1:]]
         assert len(args) == 2, args
         if negated:
@@ -27,8 +26,10 @@ def parse_condition_aux(alist, negated):
             assert len(args) == 1
             return parse_condition_aux(args[0], not negated)
     elif tag in ("forall", "exists"):
-        import __builtin__
-        __builtin__.containsQuantifiedConditions = True
+        # import __builtin__
+        # __builtin__.containsQuantifiedConditions = True
+        import builtins
+        builtins.containsQuantifiedConditions = True
         parameters = pddl_types.parse_typed_list(alist[1])
         args = alist[2:]
         assert len(args) == 1
@@ -105,6 +106,7 @@ def is_function_comparison(alist):
         if symbol[0] in ("+","/","*","-"):
             return True
         symbol = symbol[0]
+    from . import tasks
     if (tasks.Task.FUNCTION_SYMBOLS.get(symbol,"object")=="number" or 
         symbol.replace(".","").isdigit()):
         return True
@@ -119,6 +121,7 @@ def parse_literal(alist):
         return Atom(alist[0], [parse_term(term) for term in alist[1:]])
 
 def parse_term(term):
+    from . import tasks
     if isinstance(term, list):
         return FunctionTerm(term[0],[parse_term(t) for t in term[1:]])
     elif term.startswith("?"):
@@ -131,13 +134,13 @@ def parse_term(term):
 def dump_temporal_condition(condition,indent="  "):
     assert len(condition)==3
     if not isinstance(condition[0],Truth):
-        print "%sat start:" % indent
+        print("%sat start:" % indent)
         condition[0].dump(indent+"  ")
     if not isinstance(condition[1],Truth):
-        print "%sover all:" % indent
+        print("%sover all:" % indent)
         condition[1].dump(indent+"  ")
     if not isinstance(condition[2],Truth):
-        print "%sat end:" % indent
+        print("%sat end:" % indent)
         condition[2].dump(indent+"  ")
 
 
@@ -156,7 +159,7 @@ class Condition(object):
     def __ne__(self, other):
         return not self == other
     def dump(self, indent="  "):
-        print "%s%s" % (indent, self._dump())
+        print("%s%s" % (indent, self._dump()))
         for part in self.parts:
             part.dump(indent + "  ")
     def _dump(self):
@@ -213,6 +216,8 @@ class ConstantCondition(Condition):
     parts = ()
     def __init__(self):
         self.hash = hash(self.__class__)
+    def __hash__(self):
+        return self.hash
     def change_parts(self, parts):
         return self
     def __eq__(self, other):
@@ -366,11 +371,13 @@ class Literal(Condition):
         self.predicate = predicate
         self.args = tuple(args)
         self.hash = hash((self.__class__, self.predicate, self.args))
+    def __hash__(self):
+        return self.hash
     def __str__(self):
         return "%s %s(%s)" % (self.__class__.__name__, self.predicate,
                               ", ".join(map(str, self.args)))
     def dump(self, indent="  "):
-        print "%s%s %s" % (indent, self._dump(), self.predicate)
+        print("%s%s %s" % (indent, self._dump(), self.predicate))
         for arg in self.args:
             arg.dump(indent + "  ")
     def change_parts(self, parts):
@@ -431,6 +438,7 @@ class FunctionComparison(Condition): # comparing numerical functions
         self.comparator = comparator
         assert len(parts) == 2
         if compare_to_zero:
+            from . import f_expression
             self.parts = (f_expression.Difference(parts), f_expression.NumericConstant(0))
         else:
             self.parts = tuple(parts)
@@ -483,7 +491,7 @@ class NegatedFunctionComparison(FunctionComparison):
 
 class Term(object):
     def dump(self, indent="  "):
-        print "%s%s %s" % (indent, self._dump(), self.name)
+        print("%s%s %s" % (indent, self._dump(), self.name))
         for arg in self.args:
             arg.dump(indent + "  ")
     def _dump(self):
@@ -525,7 +533,8 @@ class FunctionTerm(Term):
                 typed_vars += typed
                 conjunction_parts += parts
                 new_args.append(new_term)
-    
+
+        from . import tasks
         for counter in itertools.count(1):
             new_var_name = "?v" + str(counter)
             if new_var_name not in used_variables:

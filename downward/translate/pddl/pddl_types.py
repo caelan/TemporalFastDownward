@@ -2,8 +2,6 @@
 # In the future, use explicitly relative imports or absolute
 # imports as a better solution.
 
-import conditions
-
 import graph
 
 import itertools
@@ -55,6 +53,7 @@ class TypedObject(object):
         type_map[new_name] = self.type
         return TypedObject(new_name, self.type)
   def to_untyped_strips(self):
+    from . import conditions
     return conditions.Atom(self.type, [self.name])
 
 # types is used to add (either ...) statements as supertypes

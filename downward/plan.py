@@ -1,7 +1,10 @@
 #! /usr/bin/env python
+
+from __future__ import print_function
+
 import subprocess
 import sys
-import shutil
+#import shutil
 
 def main():
 	def run(*args, **kwargs):
@@ -13,7 +16,7 @@ def main():
 			redirections["stdin"] = open(input)
 		if output:
 			redirections["stdout"] = open(output, "w")
-		print args, redirections
+		print(args, redirections)
 		subprocess.check_call(sum([arg.split("+") for arg in args],[]), **redirections)
 
 	config, domain, problem, result_name = sys.argv[1:]
@@ -28,5 +31,5 @@ def main():
 	run("search/search", config, "p", result_name, input="output")
 
 if __name__ == "__main__":
-    main()
+	main()
 

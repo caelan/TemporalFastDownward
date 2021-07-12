@@ -1,6 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: latin-1 -*-
-import sys
+
+from __future__ import print_function
+
+#import sys
 
 import axiom_rules
 import fact_groups
@@ -11,8 +14,8 @@ import sas_tasks
 import simplify
 import itertools
 import copy
-import cProfile
-import pstats
+#import cProfile
+#import pstats
 
 # TODO: The translator may generate trivial derived variables which are always true,
 # for example if there ia a derived predicate in the input that only depends on
@@ -33,7 +36,7 @@ def strips_to_sas_dictionary(groups, num_axioms, num_axiom_map, num_fluents):
     dictionary = {}
 
     # sort groups to get a deterministic output
-    map(lambda g: g.sort(lambda x, y: cmp(str(x),str(y))),groups)
+    list(map(lambda g: g.sort(lambda x, y: cmp(str(x),str(y))),groups))
     groups.sort(lambda x, y: cmp((-len(x),str(x[0])),(-len(y),str(y[0]))))
 
     for var_no, group in enumerate(groups):
@@ -41,7 +44,7 @@ def strips_to_sas_dictionary(groups, num_axioms, num_axiom_map, num_fluents):
             dictionary.setdefault(atom, []).append((var_no, val_no))
     if USE_PARTIAL_ENCODING:
         assert all(len(sas_pairs) == 1
-                   for sas_pairs in dictionary.itervalues())
+                   for sas_pairs in dictionary.values())
 
     redundant_axioms = []
     num_ax_count = 0
@@ -167,7 +170,7 @@ def translate_strips_conditions_aux(conditions, dictionary, ranges, comparison_a
                         return None
                     condition[var] = set([val])
             except KeyError as e:
-                print "Atom not in dictionary: ", fact.dump()
+                print("Atom not in dictionary: ", fact.dump())
                 raise
     
     # Now deal with the negated conditions
@@ -212,13 +215,13 @@ def translate_strips_conditions_aux(conditions, dictionary, ranges, comparison_a
                     # this atom. So we need to introduce a new condition:
                     # We can select any from new_condition and currently prefer the
                     # smalles one.
-                    candidates = sorted(new_condition.items(),
+                    candidates = sorted(list(new_condition.items()),
                                         lambda x,y: cmp(len(x[1]),len(y[1])))
                     var, vals = candidates[0]
                     condition[var] = vals
  
     def multiply_out(condition): # destroys the input
-        sorted_conds = sorted(condition.items(),
+        sorted_conds = sorted(list(condition.items()),
                               lambda x,y: cmp(len(x[1]),len(y[1])))
         flat_conds = [{}]
         for var, vals in sorted_conds:
@@ -310,10 +313,10 @@ def translate_add_effects(add_effects, dictionary, ranges, comp_axioms,
         # now eff_condition_temporal_dicts is a list of temporal conditions        
         
         if temporal:
-            eff_conditions = [[eff_dict.items() for eff_dict in eff_cond] 
+            eff_conditions = [[list(eff_dict.items()) for eff_dict in eff_cond] 
                                 for eff_cond in eff_condition_temporal_dicts]
         else:
-            eff_conditions = [eff_dict.items() 
+            eff_conditions = [list(eff_dict.items()) 
                                 for eff_dict in eff_condition_temporal_dicts]
 
         for var, val in dictionary[fact]:
@@ -348,10 +351,10 @@ def translate_del_effects(del_effects,dictionary,ranges,effect,condition,
         # now eff_condition_temporal_dicts is a list of temporal conditions        
         
         if temporal:
-            eff_conditions = [[eff_dict.items() for eff_dict in eff_cond] 
+            eff_conditions = [[list(eff_dict.items()) for eff_dict in eff_cond] 
                               for eff_cond in eff_condition_temporal_dicts]
         else:
-            eff_conditions = [eff_dict.items() 
+            eff_conditions = [list(eff_dict.items()) 
                               for eff_dict in eff_condition_temporal_dicts]
 
         for var, val in dictionary[fact]:
@@ -364,7 +367,7 @@ def translate_del_effects(del_effects,dictionary,ranges,effect,condition,
                 found_matching_add_effect = False
                 uncertain_conflict = False
     
-                for other_val, other_eff_conditions in hitherto_effects.items():
+                for other_val, other_eff_conditions in list(hitherto_effects.items()):
                     if other_val!=none_of_those:
                         if implies(eff_condition, other_eff_conditions, condition, temporal):
                             found_matching_add_effect = True
@@ -413,10 +416,10 @@ def translate_assignment_effects(assign_effects, dictionary, ranges, comp_axioms
         # now eff_condition_temporal_dicts is a list of temporal conditions        
 
         if temporal:
-            eff_conditions = [[eff_dict.items() for eff_dict in eff_cond]
+            eff_conditions = [[list(eff_dict.items()) for eff_dict in eff_cond]
                               for eff_cond in eff_condition_temporal_dicts]
         else:
-            eff_conditions = [eff_dict.items() 
+            eff_conditions = [list(eff_dict.items()) 
                               for eff_dict in eff_condition_temporal_dicts]
         for var, _ in dictionary[assignment.fluent]:
             for expvar, _ in dictionary[assignment.expression]:
@@ -452,29 +455,29 @@ def translate_strips_operator(operator, dictionary, ranges, comp_axioms):
                           condition, comp_axioms, False, None)
 
     if possible_add_conflict:
-        print operator.name
+        print(operator.name)
     assert not possible_add_conflict, "Conflicting add effects?"
 
     assign_effect, possible_assign_conflict = \
         translate_assignment_effects(operator.assign_effects, dictionary, ranges, comp_axioms, False)
     
     if possible_assign_conflict:
-        print operator.name
+        print(operator.name)
     assert not possible_assign_conflict, "Conflicting assign effects?"
 
     pre_post = []
     for var in effect:
-        for (post, eff_condition_lists) in effect[var].iteritems():
+        for (post, eff_condition_lists) in effect[var].items():
             pre = condition.get(var, -1)
             if pre != -1:
                 del condition[var]
             for eff_condition in eff_condition_lists:
                 pre_post.append((var, pre, post, eff_condition))
-    prevail = condition.items()
+    prevail = list(condition.items())
 
     assign_effects = []
     for var in assign_effect:
-        for ((op, valvar), eff_condition_lists) in assign_effect[var].iteritems():
+        for ((op, valvar), eff_condition_lists) in assign_effect[var].items():
             for eff_condition in eff_condition_lists:
                 sas_effect = sas_tasks.SASAssignmentEffect(var, op, valvar, 
                                                        eff_condition)
@@ -505,7 +508,7 @@ def translate_temporal_strips_operator_aux(operator, dictionary, ranges,
     duration = translate_operator_duration(operator.duration, dictionary)
 
     if condition is None:
-        print "operator condition is None (invalid)"
+        print("operator condition is None (invalid)")
         return None
 
     effect = []
@@ -522,7 +525,7 @@ def translate_temporal_strips_operator_aux(operator, dictionary, ranges,
         possible_add_conflict |= poss_conflict
 
     if possible_add_conflict:
-        print operator.name
+        print(operator.name)
     assert not possible_add_conflict
 
     assign_effect = []
@@ -536,14 +539,14 @@ def translate_temporal_strips_operator_aux(operator, dictionary, ranges,
         possible_assign_conflict |= conflict
     
     if possible_assign_conflict:
-        print operator.name
+        print(operator.name)
     assert not possible_assign_conflict
 
     pre_post = [[],[]]
     for time in range(2):
         cond_time = time*2 # start -> start condition, end -> end_condition
         for var in effect[time]:
-            for (post, eff_condition_lists) in effect[time][var].iteritems():
+            for (post, eff_condition_lists) in effect[time][var].items():
                 pre = condition[cond_time].get(var, -1)
                 if pre != -1:
                     del condition[cond_time][var]
@@ -566,13 +569,13 @@ def translate_temporal_strips_operator_aux(operator, dictionary, ranges,
                             eff_condition[0] = []
                 for eff_condition in eff_condition_lists:
                     pre_post[time].append((var, pre, post, eff_condition))
-    prevail = [cond.items() for cond in condition]
+    prevail = [list(cond.items()) for cond in condition]
 
     assign_effects = [[],[]]
     for time in range(2):
         for var in assign_effect[time]:
             for ((op, valvar), eff_condition_lists) \
-                in assign_effect[time][var].iteritems():
+                in assign_effect[time][var].items():
                 for eff_condition in eff_condition_lists:
                     sas_effect = sas_tasks.SASAssignmentEffect(var, op, valvar, 
                                                            eff_condition, True)
@@ -616,7 +619,7 @@ def translate_strips_axiom(axiom, dictionary, ranges, comp_axioms):
         [effect] = dictionary[axiom.effect]
     axioms = []
     for condition in conditions:
-        axioms.append(sas_tasks.SASAxiom(condition.items(), effect))
+        axioms.append(sas_tasks.SASAxiom(list(condition.items()), effect))
     return axioms
 
 def translate_numeric_axiom(axiom, dictionary):
@@ -674,7 +677,7 @@ def translate_task(strips_to_sas, ranges, init, goals, actions,
     # if any atom in goal is false, the task is unsolvable
     for fa in false_atoms:
         if fa in goals:
-            print "False atom in goal:"
+            print("False atom in goal:")
             fa.dump()
             return unsolvable_sas_task("False atom in goal")
 
@@ -687,7 +690,7 @@ def translate_task(strips_to_sas, ranges, init, goals, actions,
     ## negative goal is part of finite domain variable with only two
     ## values, which is most of the time the case, and hence refrain from
     ## introducing axioms (that are not supported by all heuristics)
-    goal_pairs = goal_dict_list[0].items()
+    goal_pairs = list(goal_dict_list[0].items())
     goal = sas_tasks.SASGoal(goal_pairs)
 
     # FIXME: remove this, defunct anyways
@@ -720,7 +723,7 @@ def translate_task(strips_to_sas, ranges, init, goals, actions,
                     num_axiom_layer += 1
     for axiom in comp_axioms[1]:
         axiom_layers[axiom.effect] = num_axiom_layer
-    for atom, layer in axiom_layer_dict.iteritems():
+    for atom, layer in axiom_layer_dict.items():
         assert layer >= 0
         [(var, val)] = strips_to_sas[atom]
         axiom_layers[var] = layer + num_axiom_layer + 1
@@ -750,7 +753,7 @@ def translate_task(strips_to_sas, ranges, init, goals, actions,
                              temp_operators, axioms, sas_num_axioms, comp_axioms[1])
 
 def unsolvable_sas_task(msg):
-    print "%s! Generating unsolvable task..." % msg
+    print("%s! Generating unsolvable task..." % msg)
     variables = sas_tasks.SASVariables([2], [-1])
     init = sas_tasks.SASInit([0])
     goal = sas_tasks.SASGoal([(0, 1)])
@@ -763,7 +766,7 @@ def unsolvable_sas_task(msg):
             temp_operators, axioms, num_axioms, comp_axioms)
 
 def pddl_to_sas(task):
-    print "Instantiating..."
+    print("Instantiating...")
     (relaxed_reachable, atoms, num_fluents, actions, 
         durative_actions, axioms, num_axioms, 
         reachable_action_params) = instantiate.explore(task)
@@ -793,9 +796,9 @@ def pddl_to_sas(task):
     num_axioms_by_layer, max_num_layer, num_axiom_map, const_num_axioms = \
         numeric_axiom_rules.handle_axioms(num_axioms)
 
-    print "Building STRIPS to SAS dictionary..."
+    print("Building STRIPS to SAS dictionary...")
     ranges, strips_to_sas = strips_to_sas_dictionary(groups, num_axioms, num_axiom_map, num_fluents)
-    print "Translating task..."
+    print("Translating task...")
     assert not actions, "There shouldn't be any actions - just temporal actions"
     sas_task = translate_task(strips_to_sas, ranges, task.init, goal_list,
                               actions, durative_actions, axioms, num_axioms,
@@ -825,32 +828,34 @@ def build_mutex_key(strips_to_sas, groups):
                 for var, val in strips_to_sas[fact]:
                     group_key.append((var, val, str(fact)))
             else:
-                print "not in strips_to_sas, left out:", fact
+                print("not in strips_to_sas, left out:", fact)
         group_keys.append(group_key)
     return group_keys
 
 def write_translation_key(strips_to_sas):
-    var_file = file("variables.groups", "w")
+    #var_file = file("variables.groups", "w")
+    var_file = open("variables.groups", "w")
     vars = dict()
-    for exp,[(var, val)] in strips_to_sas.iteritems():
+    for exp,[(var, val)] in strips_to_sas.items():
         vars.setdefault(var, []).append((val, exp))
     for var in range(len(vars)):
-        print >> var_file, "var%d" % var
+        print("var%d" % var, file=var_file)
         vals = sorted(vars[var]) 
         for (val, exp) in vals:
-            print >> var_file, "   %d: %s" % (val, exp)
+            print("   %d: %s" % (val, exp), file=var_file)
         if val != -2:
-            print >> var_file, "   %d: <none of those>" % (val + 1)
+            print("   %d: <none of those>" % (val + 1), file=var_file)
 
 def write_mutex_key(mutex_key):
-    invariants_file = file("all.groups", "w")
-    print >> invariants_file, "begin_groups"
-    print >> invariants_file, len(mutex_key)
+    #invariants_file = file("all.groups", "w")
+    invariants_file = open("all.groups", "w")
+    print("begin_groups", file=invariants_file)
+    print(len(mutex_key), file=invariants_file)
     for group in mutex_key:
         #print map(str, group)
         no_facts = len(group)
-        print >> invariants_file, "group"
-        print >> invariants_file, no_facts
+        print("group", file=invariants_file)
+        print(no_facts, file=invariants_file)
         for var, val, fact in group:
             #print fact
             assert str(fact).startswith("Atom ")
@@ -868,8 +873,8 @@ def write_mutex_key(mutex_key):
                 print_line += str(arg).strip() + " "
             #print fact
             #print print_line
-            print >> invariants_file, print_line
-    print >> invariants_file, "end_groups"
+            print(print_line, file=invariants_file)
+    print("end_groups", file=invariants_file)
     invariants_file.close()
 
 
@@ -877,9 +882,9 @@ if __name__ == "__main__":
     #pr = cProfile.Profile()
     #pr.enable()
     import pddl
-    print "Parsing..."
-    import __builtin__
-    __builtin__.containsQuantifiedConditions = False
+    print("Parsing...")
+    import builtins
+    builtins.containsQuantifiedConditions = False
     task = pddl.open()
     if task.domain_name in ["protocol", "rover"]:
         # This is, of course, a HACK HACK HACK!
@@ -895,15 +900,17 @@ if __name__ == "__main__":
     # import psyco
     # psyco.full()
 
-    print("Contains quantified condition(s): %r" % containsQuantifiedConditions)
+    containsQuantifiedConditions = builtins.containsQuantifiedConditions
+    print(("Contains quantified condition(s): %r" % containsQuantifiedConditions))
     
     sas_task = pddl_to_sas(task)
-    print "Writing output..."
-    sas_task.output(file("output.sas", "w"))
+    print("Writing output...")
+    #sas_task.output(file("output.sas", "w"))
+    sas_task.output(open("output.sas", "w"))
     out_file = open("output.sas","a")
     out_file.write("%d\n" % containsQuantifiedConditions)
     out_file.close()
     #pr.disable()
     #pstats.Stats(pr).sort_stats('tottime').print_stats(25) # cumtime | tottime
 
-    print "Done!"
+    print("Done!")

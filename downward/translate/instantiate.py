@@ -143,29 +143,29 @@ if __name__ == "__main__":
         axioms, num_axioms,
         reachable_action_params) = explore(task)
 
-  print "goal relaxed reachable: %s" % relaxed_reachable
-  print "%d atoms:" % len(atoms)
+  print("goal relaxed reachable: %s" % relaxed_reachable)
+  print("%d atoms:" % len(atoms))
   for atom in atoms:
-    print " ", atom
-  print
-  print "%d actions:" % len(actions)
+    print(" ", atom)
+  print()
+  print("%d actions:" % len(actions))
   for action in actions:
     action.dump()
-    print
-  print
-  print "%d durative actions:" % len(durative_actions)
+    print()
+  print()
+  print("%d durative actions:" % len(durative_actions))
   for action in durative_actions:
     action.dump()
-    print
-  print
-  print "%d axioms:" % len(axioms)
+    print()
+  print()
+  print("%d axioms:" % len(axioms))
   for axiom in axioms:
     axiom.dump()
-    print
-  print "%d numeric axioms:" % len(num_axioms)
+    print()
+  print("%d numeric axioms:" % len(num_axioms))
   for axiom in num_axioms:
     axiom.dump()
-    print
-  print "%d reachable_action_params:" % len(reachable_action_params)
+    print()
+  print("%d reachable_action_params:" % len(reachable_action_params))
   for rap in reachable_action_params:
-      print rap
+      print(rap)

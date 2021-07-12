@@ -1,7 +1,6 @@
-import conditions
-import tasks
-import f_expression
-import pddl_types
+from . import conditions
+from . import f_expression
+from . import pddl_types
 
 def cartesian_product(*sequences):
   # TODO: Also exists in tools.py outside the pddl package (defined slightly
@@ -106,6 +105,7 @@ def parse_cond_effect(alist, durative=False):
         symbol = alist[1]
         if isinstance(symbol,list):
             symbol = symbol[0]
+        from . import tasks
         if tasks.Task.FUNCTION_SYMBOLS.get(symbol,"object")=="number":
             return ConjunctiveEffect([f_expression.parse_assignment(alist,durative)])
         else:
@@ -126,17 +126,17 @@ class Effect(object):
   def dump(self):
     indent = "  "
     if self.parameters:
-      print "%sforall %s" % (indent, ", ".join(map(str, self.parameters)))
+      print("%sforall %s" % (indent, ", ".join(map(str, self.parameters))))
       indent += "  "
     if ((isinstance(self.condition,list) and 
         self.condition != [conditions.Truth(),conditions.Truth(),conditions.Truth()])
        or (not isinstance(self.condition,list) and self.condition != conditions.Truth())):
-      print "%sif" % indent
+      print("%sif" % indent)
       if isinstance(self.condition,list):
         conditions.dump_temporal_condition(self.condition,indent + "  ")
       else:
         self.condition.dump(indent + "  ")
-      print "%sthen" % indent
+      print("%sthen" % indent)
       indent += "  "
     self.peffect.dump(indent)
   def copy(self):
@@ -209,9 +209,9 @@ class TmpEffect(object):
         self.time = time
     def dump(self, indent="  "):
         if self.time:
-            print "%sat %s:" %(indent,self.time)
+            print("%sat %s:" %(indent,self.time))
             indent += "  "
-        print "%sand" % (indent)
+        print("%sand" % (indent))
         for eff in self.effects:
             eff.dump(indent + "  ")
     def _dump(self):
@@ -238,14 +238,14 @@ class ConditionalEffect(TmpEffect):
         assert len(self.effects) == 1
     def dump(self, indent="  "):
         if self.time:
-            print "%sat %s:" %(indent,self.time)
+            print("%sat %s:" %(indent,self.time))
             indent += "  "
-        print "%sif" % (indent)
+        print("%sif" % (indent))
         if isinstance(self.condition,list):
             conditions.dump_temporal_condition(self.condition,indent + "  ")
         else:
             self.condition.dump(indent + "  ")
-        print "%sthen" % (indent)
+        print("%sthen" % (indent))
         self.effects[0].dump(indent + "  ")
     def normalize(self):
         normalized = self.effects[0].normalize()
@@ -278,9 +278,9 @@ class UniversalEffect(TmpEffect):
         assert len(self.effects) == 1
     def dump(self, indent="  "):
         if self.time:
-            print "%sat %s:" %(indent,self.time)
+            print("%sat %s:" %(indent,self.time))
             indent += "  "
-        print "%sforall %s" % (indent, ", ".join(map(str, self.parameters)))
+        print("%sforall %s" % (indent, ", ".join(map(str, self.parameters))))
         self.effects[0].dump(indent + "  ")
     def normalize(self):
         effect = self.effects[0].normalize()
@@ -346,7 +346,7 @@ class ObjectFunctionAssignment(object):
         self.head = head    # term
         self.value = value  # term
     def dump(self, indent="  "):
-        print "%sassign" % (indent)
+        print("%sassign" % (indent))
         self.head.dump(indent + "  ")
         self.value.dump(indent + "  ")
     def rename_variables(self, renamings):

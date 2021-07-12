@@ -1,13 +1,12 @@
 import itertools
 
-import actions
-import axioms
-import conditions
-import effects
-import f_expression
-import functions
-import predicates
-import pddl_types
+from . import actions
+from . import axioms
+from . import conditions
+from . import f_expression
+from . import functions
+from . import predicates
+from . import pddl_types
 
 
 class Task(object):
@@ -52,36 +51,36 @@ class Task(object):
   parse = staticmethod(parse)
 
   def dump(self):
-    print "Problem %s: %s [%s]" % (self.domain_name, self.task_name,
-                                   self.requirements)
-    print "Types:"
+    print("Problem %s: %s [%s]" % (self.domain_name, self.task_name,
+                                   self.requirements))
+    print("Types:")
     for type in self.types:
-      print "  %s" % type
-    print "Objects:"
+      print("  %s" % type)
+    print("Objects:")
     for obj in self.objects:
-      print "  %s" % obj
-    print "Predicates:"
+      print("  %s" % obj)
+    print("Predicates:")
     for pred in self.predicates:
-      print "  %s" % pred
-    print "Functions:"
-    print "  " + str(self.function_symbols)
-    print "Init:"
+      print("  %s" % pred)
+    print("Functions:")
+    print("  " + str(self.function_symbols))
+    print("Init:")
     for fact in self.init:
       fact.dump()
-    print "Goal:"
+    print("Goal:")
     self.goal.dump()
-    print "Derived Functions:"
+    print("Derived Functions:")
     self.function_administrator.dump()
     if self.actions:
-        print "Actions:"
+        print("Actions:")
         for action in self.actions:
             action.dump()
     if self.durative_actions:
-        print "Durative Actions:"
+        print("Durative Actions:")
         for action in self.durative_actions:
             action.dump()
     if self.axioms:
-      print "Axioms:"
+      print("Axioms:")
       for axiom in self.axioms:
         axiom.dump()
 
@@ -105,16 +104,16 @@ class DerivedFunctionAdministrator(object):
         self.functions = dict()
 
     def dump(self,indent = "  "):
-        for axiom in self.functions.values():
+        for axiom in list(self.functions.values()):
             axiom.dump(indent)
     def get_all_axioms(self):
-        return self.functions.values() 
+        return list(self.functions.values()) 
     def get_derived_function(self,exp):
         def get_default_variables(nr):
             return [conditions.Variable("?v%s" % varnr) for varnr in range(nr)]
         def get_new_symbol(key):   
             # introduce new derived function symbol
-            used_names = [axiom.name for axiom in self.functions.values()]
+            used_names = [axiom.name for axiom in list(self.functions.values())]
             for counter in itertools.count(1):
                 new_func_name = "derived!" + str(counter)
                 if new_func_name not in used_names:
@@ -196,15 +195,15 @@ def parse_domain(domain_pddl):
   the_actions = []
   the_durative_actions = []
 
-  assert iterator.next() == "define"
-  domain_line = iterator.next()
+  assert next(iterator) == "define"
+  domain_line = next(iterator)
   assert domain_line[0] == "domain" and len(domain_line) == 2
   yield domain_line[1]
 
-  opt_requirements = iterator.next()
+  opt_requirements = next(iterator)
   if opt_requirements[0] == ":requirements":
     yield Requirements(opt_requirements[1:])
-    opt_types = iterator.next()
+    opt_types = next(iterator)
   else:
     yield Requirements([":strips"])
     opt_types = opt_requirements
@@ -213,18 +212,18 @@ def parse_domain(domain_pddl):
   if opt_types[0] == ":types":
     the_types.extend(pddl_types.parse_typed_list(opt_types[1:],
                                                  constructor=pddl_types.Type))
-    opt_constants = iterator.next()
+    opt_constants = next(iterator)
   else:
     opt_constants = opt_types
 
   if opt_constants[0] == ":constants":
     yield pddl_types.parse_typed_list(opt_constants[1:],types=the_types)
-    pred = iterator.next()
+    pred = next(iterator)
   else:
     yield []
     pred = opt_constants
 
-  the_predicates = []
+  #the_predicates = []
   if pred[0] == ":predicates":
     the_predicates =  ([predicates.Predicate.parse(entry) for entry in pred[1:]] +
          [predicates.Predicate("=",
@@ -251,18 +250,18 @@ def parse_domain(domain_pddl):
 def parse_task(task_pddl):
   iterator = iter(task_pddl)
 
-  assert iterator.next() == "define"
-  problem_line = iterator.next()
+  assert next(iterator) == "define"
+  problem_line = next(iterator)
   assert problem_line[0] == "problem" and len(problem_line) == 2
   yield problem_line[1]
-  domain_line = iterator.next()
+  domain_line = next(iterator)
   assert domain_line[0] == ":domain" and len(domain_line) == 2
   yield domain_line[1]
 
-  objects_opt = iterator.next()
+  objects_opt = next(iterator)
   if objects_opt[0] == ":objects":
     yield pddl_types.parse_typed_list(objects_opt[1:])
-    init = iterator.next()
+    init = next(iterator)
   else:
     yield []
     init = objects_opt
@@ -283,7 +282,7 @@ def parse_task(task_pddl):
         initial.append(conditions.Atom(fact[0], [conditions.parse_term(term) for term in fact[1:]]))
   yield initial
 
-  goal = iterator.next()
+  goal = next(iterator)
   assert goal[0] == ":goal" and len(goal) == 2
   yield conditions.parse_condition(goal[1])
 

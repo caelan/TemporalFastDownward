@@ -62,7 +62,7 @@ class Assignment(object):
         # element in its equivalence class (with objects being
         # smaller than variables)
         mapping = {}
-        for eq_class in self.eq_classes.itervalues():
+        for eq_class in self.eq_classes.values():
             variables = [item for item in eq_class 
                          if isinstance(item, pddl.Variable)]
             constants = [item for item in eq_class 
@@ -146,12 +146,12 @@ class ConstraintSystem(object):
         return other
 
     def dump(self):
-        print "AssignmentSystem:"
+        print("AssignmentSystem:")
         for comb_assignment in self.combinatorial_assignments:
             disj = " or ".join([str(assig) for assig in comb_assignment])
-            print "  ASS: ", disj
+            print("  ASS: ", disj)
         for neg_clause in self.neg_clauses:
-            print "  NEG: ", str(neg_clause)
+            print("  NEG: ", str(neg_clause))
         
     def is_solvable(self):
         """Check whether the combinatorial assignments include at least

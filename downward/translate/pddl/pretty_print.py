@@ -1,4 +1,5 @@
-import cStringIO
+#import cStringIO
+import io
 import textwrap
 
 __all__ = ["print_nested_list"]
@@ -21,7 +22,8 @@ def wrap_lines(lines):
     yield line.replace("_", "-")
 
 def print_nested_list(nested_list):
-  stream = cStringIO.StringIO()
+  #stream = cStringIO.StringIO()
+  stream = io.StringIO()
   indent = 0
   startofline = True
   pendingspace = False
@@ -48,4 +50,4 @@ def print_nested_list(nested_list):
       pendingspace = True
 
   for line in wrap_lines(stream.getvalue().splitlines()):
-    print line
+    print(line)

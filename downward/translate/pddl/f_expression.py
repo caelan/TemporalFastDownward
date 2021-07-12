@@ -1,5 +1,7 @@
-import string
-import conditions
+from __future__ import print_function
+
+#import string
+from . import conditions
 
 def isFloat(astring):
     try:
@@ -34,7 +36,8 @@ def parse_expression(exp, durative=False):
                 assert len(args) == 2
                 return Difference(args)
     elif isFloat(exp):
-        return NumericConstant(string.atof(exp))
+        #return NumericConstant(string.atof(exp))
+        return NumericConstant(float(exp))
     elif exp == "?duration":
         return DurationVariable()
     else:
@@ -71,7 +74,7 @@ class FunctionalExpression(object):
             result |= part.free_variables()
         return result
     def dump(self, indent="  "):
-        print "%s%s" % (indent, self._dump())
+        print("%s%s" % (indent, self._dump()))
         for part in self.parts:
             part.dump(indent + "  ")
     def _dump(self):
@@ -101,7 +104,7 @@ class FunctionalExpression(object):
         return (typed_vars,conjunction_parts,self.__class__(new_parts))
     def  instantiate(self, var_mapping, fluent_functions, 
                         init_function_vals, task, new_axioms=[]):
-        print self.__class__.__name__
+        print(self.__class__.__name__)
         raise ValueError("Cannot instantiate condition: not normalized")
         
 
@@ -186,6 +189,8 @@ class NumericConstant(FunctionalExpression):
     def __init__(self, value):
         self.value = value
         self.hash = hash((self.__class__, self.value))
+    def __hash__(self):
+        return self.hash
     def __eq__(self, other):
         return (self.__class__ == other.__class__ and self.value == other.value)
     def __str__(self):
@@ -210,6 +215,8 @@ class PrimitiveNumericExpression(FunctionalExpression):
         self.symbol = symbol
         self.args = tuple(args)
         self.hash = hash((self.__class__, self.symbol, self.args))
+    def __hash__(self):
+        return self.hash
     def __str__(self):
         return "PNE %s(%s)" % (self.symbol, ", ".join(map(str, self.args)))
     def __eq__(self, other):
@@ -218,7 +225,7 @@ class PrimitiveNumericExpression(FunctionalExpression):
                 self.symbol == other.symbol and 
                 self.args == other.args) 
     def dump(self, indent="  "):
-        print "%s%s" % (indent, self._dump())
+        print("%s%s" % (indent, self._dump()))
         for arg in self.args:
             arg.dump(indent + "  ")
     def _dump(self):
@@ -277,7 +284,7 @@ class FunctionAssignment(object):
                 self.fluent == other.fluent and
                 self.expression == other.expression)
     def dump(self, indent="  "):
-        print "%s%s" % (indent, self._dump())
+        print("%s%s" % (indent, self._dump()))
         self.fluent.dump(indent + "  ")
         self.expression.dump(indent + "  ")
     def _dump(self):
