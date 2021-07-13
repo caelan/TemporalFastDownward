@@ -276,6 +276,9 @@ class Truth(ConstantCondition):
 
 
 class JunctorCondition(Condition):
+    def __hash__(self):
+        return self.hash
+
     def __eq__(self, other):
         # Compare hash first for speed reasons.
         return (self.hash == other.hash and
